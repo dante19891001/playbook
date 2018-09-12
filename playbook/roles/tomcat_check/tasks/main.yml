@@ -1,0 +1,3 @@
+---
+- name: tomcat version  
+  command: sh "{{CATALINA_HOME_01}}"/bin/version.sh

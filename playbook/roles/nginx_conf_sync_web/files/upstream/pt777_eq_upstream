@@ -1,0 +1,30 @@
+#20180728
+upstream pt777webssl {
+    server 127.0.0.1:16440;
+    server 127.0.0.1:16441;
+    server 127.0.0.1:16442;
+    server 113.10.193.35:16440 backup;
+    server 113.10.193.35:16441 backup;
+    server 113.10.193.35:16442 backup;
+}
+
+upstream pt777web {
+    server 127.0.0.1:16443;
+    server 127.0.0.1:16444;
+    server 113.10.193.35:16443 backup;
+    server 113.10.193.35:16444 backup;
+}
+
+upstream pt777appweb {
+    server 127.0.0.1:10070;
+    server 127.0.0.1:10071;
+    server 127.0.0.1:10072;
+    server 127.0.0.1:10073;
+    server 127.0.0.1:10074;
+}
+
+upstream pt777_web_api {
+    server 172.23.2.60:15007;
+}
+
+#test

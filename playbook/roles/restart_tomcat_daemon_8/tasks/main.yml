@@ -1,0 +1,19 @@
+---
+- name: yum install essential packages, if not, copy module will not work
+  yum: name={{ item }} state=absent
+  with_items:
+    - epel-release
+    - libselinux-python
+
+- name: copy tomcat management script template part to "{{ host }}"
+  template:
+    src: tomcat-jdk8u144.sh
+    dest: "/etc/init.d/{{ initd_file }}"
+    mode: 0755
+
+- name: restart service "{{ initd_file }}" , in all cases, also issue daemon-reload to pick up config changes
+  systemd:
+    name: "{{ initd_file }}"
+    state: restarted
+    enabled: yes
+    daemon_reload: yes

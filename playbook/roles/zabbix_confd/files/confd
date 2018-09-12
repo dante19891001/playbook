@@ -1,0 +1,1 @@
+UserParameter=confd,ps -ef |grep confd |grep -v grep |wc -l

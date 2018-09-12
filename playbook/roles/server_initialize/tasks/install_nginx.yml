@@ -1,0 +1,36 @@
+---
+- name: copy nginx install script
+  template:
+    src: nginx_install.sh.j2
+    dest: "{{ install_base_dir }}/nginx_install.sh"
+    mode: 0755
+    owner: "{{ ansible_user }}"
+
+- name: copy nginx init script
+  copy:
+    src: nginxd
+    dest: /etc/init.d/nginx
+    mode: 0755
+
+- name: make nginx start on boot
+  service:
+    name: nginx
+    enabled: yes
+
+- name: install env packages
+  yum: name={{ inner_item }} state=present
+  with_items:
+    - gcc
+    - gcc-c++
+    - cmake
+    - ncurses-devel
+    - pcre-devel
+    - openssl
+    - openssl-devel
+  loop_control:
+    loop_var: inner_item
+
+- name: install nginx
+  shell: /bin/sh nginx_install.sh >> /tmp/nginx_install.log 2>&1
+  args:
+    chdir: "{{ install_base_dir }}"

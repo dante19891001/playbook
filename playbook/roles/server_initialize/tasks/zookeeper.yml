@@ -1,0 +1,10 @@
+---
+- name: check zookeeper exist or not
+  stat:
+    path: "{{ zookeeper_cmd_ser }}"
+  register: zk_exist
+  no_log: True
+
+- name: start install zookeeper
+  include: install_zookeeper.yml
+  when: not zk_exist.stat.exists

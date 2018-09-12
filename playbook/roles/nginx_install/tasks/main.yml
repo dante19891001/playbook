@@ -1,0 +1,63 @@
+---
+- name: copy nginx files
+  copy:
+    src: "{{ item }}"
+    dest: /usr/local/src
+    mode: 0644
+  with_items:
+    - nginx_install.sh
+    - nginx-1.12.1.tar.gz
+
+- name: execute nginx_install.sh(the script already have the nginx check logic).
+  command: "/bin/sh nginx_install.sh"
+  args:
+    chdir: /usr/local/src
+
+- name: copy nginx.conf
+  copy:
+    src: nginx.conf
+    dest: /usr/local/nginx/conf/nginx.conf
+    owner: www
+    group: www
+    mode: 0644
+
+- name: copy nginxd
+  copy:
+    src: nginxd
+    dest: /etc/init.d/nginx
+    mode: 0755
+
+- name: start nginx on boot
+  service:
+    name: nginx
+    enabled: yes
+
+- name: prepare nginx's folders
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: www
+    group: www
+    mode: 0755
+  with_items:
+    - /home/data/wwwlogs
+    - /usr/local/nginx/conf/vhost
+    - /usr/local/nginx/conf/crt
+
+- name: prepare nginx's files
+  file:
+    path: "{{ item }}"
+    owner: www
+    group: www
+    mode: 0644
+    state: touch
+  with_items:
+    - /usr/local/nginx/conf/vhost/include
+
+- name: copy profile env file to /etc/profile.d
+  copy:
+    src: nginx.sh
+    dest: /etc/profile.d/nginx.sh
+
+- name: activite nginx.sh
+  shell: "source /etc/profile"

@@ -1,0 +1,7 @@
+---
+- name: copy redis session config file <context.xml> to "{{ host }}"
+  template:
+    src: context.xml
+    dest: "{{ item }}/conf/context.xml"
+  with_items: "{{ CATALINA_HOME }}"
+  ignore_errors: true

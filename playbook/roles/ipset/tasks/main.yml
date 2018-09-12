@@ -1,0 +1,34 @@
+---
+- name: ipset installed or not
+  command: service ipset status
+  register: ipset
+  ignore_errors: yes
+
+- name: ipset install
+  yum: name={{ item }} state=present
+  with_items:
+    - ipset
+    - ipset-service
+  when: ipset.stderr != ""
+  ignore_errors: yes
+
+- name: ipset group rules check
+  command: ipset list "{{ ipset_group }}"
+  register: ipset_g
+  ignore_errors: yes
+
+- name: ipset create "{{ ipset_group }}"
+  command: ipset create "{{ ipset_group }}" hash:net
+  when: ipset_g.stderr != ""
+
+- name: ipset add ip
+  command: ipset add "{{ ipset_group }}" "{{ item }}"
+  with_items: "{{ ips }}"
+  ignore_errors: yes
+
+- name: ipset save
+  command: service ipset save
+
+- service:
+    name: ipset
+    state: restarted

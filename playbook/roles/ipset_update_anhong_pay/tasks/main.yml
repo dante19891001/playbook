@@ -1,0 +1,39 @@
+---
+- name: ipset installed or not
+  command: /usr/sbin/service ipset status
+  register: ipset_result
+  ignore_errors: yes
+
+- name: ipset installed or not
+  yum: name={{ item }} state=present
+  with_items:
+    - ipset
+    - ipset-service
+  when: ipset_result is failed
+  ignore_errors: yes
+
+- name: ipset anhong_pay rules check
+  command: /usr/sbin/ipset list anhong_pay
+  register: ipset_anhong_pay
+  ignore_errors: yes
+
+- name: create anhong_pay group if not exist
+  command: /usr/sbin/ipset create anhong_pay hash:net
+  when: ipset_anhong_pay is failed
+
+- name: ipset add ip to anhong_pay
+  command: /usr/sbin/ipset add anhong_pay "{{ item }}"
+  with_items: "{{ anhong_pay_add }}"
+  ignore_errors: yes
+
+- name: ipset del ip from anhong_pay
+  command: /usr/sbin/ipset del anhong_pay "{{ item }}"
+  with_items: "{{ anhong_pay_del }}"
+  ignore_errors: yes
+
+- name: ipset save
+  command: /usr/sbin/service ipset save
+
+- service:
+    name: ipset
+    state: restarted

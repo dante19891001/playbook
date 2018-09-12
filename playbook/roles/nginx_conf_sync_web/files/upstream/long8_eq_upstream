@@ -1,0 +1,23 @@
+upstream long8webssl {
+    server 127.0.0.1:16330;
+    server 127.0.0.1:16331;
+    server 127.0.0.1:16332;
+}
+
+upstream long8web {
+    server 127.0.0.1:16333;
+    server 127.0.0.1:16334;
+}
+
+upstream long8appweb {
+    server 127.0.0.1:10080;
+    server 127.0.0.1:10081;
+    server 127.0.0.1:10082;
+    server 127.0.0.1:10083;
+    server 127.0.0.1:10084;
+}
+
+upstream long8_web_api {
+    server 172.23.2.60:15012;
+}
+

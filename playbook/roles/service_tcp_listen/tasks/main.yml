@@ -1,0 +1,12 @@
+---
+- name: copy service_listen.sh to /home/deploy/
+  copy:
+    src: service_listen.sh
+    dest: /home/deploy/
+    mode: 755
+
+- name: create service_listen task
+  cron:
+    name: "service listen"
+    minute: "*/1"
+    job: "/bin/sh /home/deploy/service_listen.sh > /dev/null 2>&1"

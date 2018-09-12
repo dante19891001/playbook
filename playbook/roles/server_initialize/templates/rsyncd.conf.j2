@@ -1,0 +1,20 @@
+uid = root
+gid = root
+use chroot = no
+max connections = 5
+pid file = /var/run/rsync.pid
+lock file = /var/run/rsync.lock
+log file = /var/log/rsync.log
+
+{% for ser_full_name,ser_short_name in server_type.items() %}
+{% if ser_full_name in rsync_service %}
+
+[{{ brand.name }}_{{ ser_full_name }}]
+path =/home/{{ ser_full_name }}/{{ brand.name }}_{{ ser_short_name.ext }}/DFH_Office
+ignore errors
+read only = no
+list = yes
+auth users = leo
+secrets file = /etc/rsyncd.secrets
+{% endif %}
+{% endfor %}

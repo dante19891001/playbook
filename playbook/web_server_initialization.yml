@@ -1,0 +1,17 @@
+---
+- hosts: "{{ host }}"
+  gather_facts: yes
+  become: yes
+
+  roles:
+    - jdk7u79_install
+    - rng-tools_install
+    - tomcat_apr_install
+    - nginx_install
+    - redis_session_install
+    - tomcat_web_install
+    - tomcat_daemon_setup
+    - rsync_conf_sync
+    - initialization_folder
+    - font_install
+    - log_rotate_multiple

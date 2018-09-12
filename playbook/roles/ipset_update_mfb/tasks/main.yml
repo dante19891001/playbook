@@ -1,0 +1,39 @@
+---
+- name: ipset installed or not
+  command: /usr/sbin/service ipset status
+  register: ipset_result
+  ignore_errors: yes
+
+- name: ipset installed or not
+  yum: name={{ item }} state=present
+  with_items:
+    - ipset
+    - ipset-service
+  when: ipset_result is failed
+  ignore_errors: yes
+
+- name: ipset mfb rules check
+  command: /usr/sbin/ipset list mfb
+  register: ipset_mfb
+  ignore_errors: yes
+
+- name: create mfb group if not exist
+  command: /usr/sbin/ipset create mfb hash:net
+  when: ipset_mfb is failed
+
+- name: ipset add ip to mfb
+  command: /usr/sbin/ipset add mfb "{{ item }}"
+  with_items: "{{ mfb_add }}"
+  ignore_errors: yes
+
+- name: ipset del ip from mfb
+  command: /usr/sbin/ipset del mfb "{{ item }}"
+  with_items: "{{ mfb_del }}"
+  ignore_errors: yes
+
+- name: ipset save
+  command: /usr/sbin/service ipset save
+
+- service:
+    name: ipset
+    state: restarted

@@ -1,0 +1,39 @@
+---
+- name: ipset installed or not
+  command: /usr/sbin/service ipset status
+  register: ipset_result
+  ignore_errors: yes
+
+- name: ipset installed or not
+  yum: name={{ item }} state=present
+  with_items:
+    - ipset
+    - ipset-service
+  when: ipset_result is failed
+  ignore_errors: yes
+
+- name: ipset 9an_wallet rules check
+  command: /usr/sbin/ipset list 9an_wallet
+  register: ipset_9an_wallet
+  ignore_errors: yes
+
+- name: create 9an_wallet group if not exist
+  command: /usr/sbin/ipset create 9an_wallet hash:net
+  when: ipset_9an_wallet is failed
+
+- name: ipset add ip to 9an_wallet
+  command: /usr/sbin/ipset add 9an_wallet "{{ item }}"
+  with_items: "{{ nine_an_wallet_add }}"
+  ignore_errors: yes
+
+- name: ipset del ip from 9an_wallet
+  command: /usr/sbin/ipset del 9an_wallet "{{ item }}"
+  with_items: "{{ nine_an_wallet_del }}"
+  ignore_errors: yes
+
+- name: ipset save
+  command: /usr/sbin/service ipset save
+
+- service:
+    name: ipset
+    state: restarted

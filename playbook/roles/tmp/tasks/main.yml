@@ -1,0 +1,39 @@
+---
+- name: chown -R tomcat:tomcat
+  shell: chmod -R 655 /home/middleservice/redis_midd/webapps/DFH/WEB-INF/classes | chown -R tomcat:tomcat /home/middleservice/redis_midd/webapps/DFH
+
+#- name:  mv  /etc/rsyncd.conf.rpmsave /etc/rsyncd.conf
+#  shell:  mv  /etc/rsyncd.conf.rpmsave /etc/rsyncd.conf
+#  ignore_errors: True
+  
+#- name: fetch result to local
+#  fetch:
+#    src: /tmp/check_host.txt
+#    dest: /usr/local/src
+#-  name: copy
+#   copy:
+#     src: "{{ item }}"
+#     dest: /usr/local/src/
+#   with_items:
+#     - psutil-2.1.3.tar.gz
+
+#- name: copy golangAgent to /home/deploy/
+#  copy:
+#    src: monitorProGoAgent.sh
+#    dest: /home/deploy/
+#    mode: 755
+#    owner: root
+#    group: root
+
+#- name: copy golangAgent to /home/deploy/
+#  shell: chmod 755 /home/deploy/monitorProGoAgent.sh
+    
+#- name: create monitorProGoAgent task
+#  cron:
+#    name: "monitorProGoAgent"
+#    minute: "0,10,20,30,40,50"
+#    hour: "*"
+#    job: "/bin/sh /home/deploy/monitorProGoAgent.sh > /dev/null 2>&1"
+
+#- name: chmod +x /etc/init.d/sentinel
+#  shell: chmod +x /etc/init.d/sentinel

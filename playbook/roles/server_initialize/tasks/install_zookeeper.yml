@@ -1,0 +1,13 @@
+---
+- name: create "{{ zookeeper_basedir }}"
+  file:
+    path: "{{ zookeeper_basedir }}"
+    state: directory
+    mode: 0755
+
+- name: download and unarchive zookeeper
+  unarchive:
+    src: "{{ zookeeper_url }}"
+    dest: "{{ zookeeper_basedir }}"
+    remote_src: True
+    copy: no

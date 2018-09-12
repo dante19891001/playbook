@@ -1,0 +1,14 @@
+upstream qywebssl {
+    server 127.0.0.1:16220;
+    server 127.0.0.1:16221;
+    server 127.0.0.1:16222;
+}
+
+upstream qyweb {
+    server 127.0.0.1:16223;
+    server 127.0.0.1:16224;
+}
+
+upstream qy_web_api {
+    server 172.23.2.60:15006;
+}

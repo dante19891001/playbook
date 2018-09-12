@@ -1,0 +1,7 @@
+---
+- name: fetch server.xml to local
+  fetch:
+    src: "{{ item }}/conf/server.xml"
+    dest: /tmp/check_tomcat_config_result
+  with_items: "{{ CATALINA_HOME }}"
+  ignore_errors: true

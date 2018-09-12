@@ -1,0 +1,24 @@
+---
+- name: sync nginx crt
+  unarchive:
+    src: "{{ brand }}_crt.zip"
+    dest: "{{ nginx_base }}/conf/crt"
+    owner: www
+    group: www
+
+- name: sync nginx vhost
+  unarchive:
+    src: "{{ brand }}_vhost.zip"
+    dest: "{{ nginx_base }}/conf/vhost"
+    owner: www
+    group: www
+
+- name: nginx config check
+  command: "{{ nginx_base }}/sbin/nginx -t -c {{ nginx_base }}/conf/nginx.conf"
+  register: result
+
+- name: nginx reload
+  service:
+    name: nginx
+    state: reloaded
+  when: result is succeeded

@@ -1,0 +1,9 @@
+---
+- name: copy confd  to webserver
+  copy: 
+    src: confd
+    dest: /usr/local/zabbix/etc/zabbix_agentd.conf.d/
+
+- name: zabbix is restart
+  shell: /etc/init.d/zabbix_agentd restart 
+   

@@ -1,0 +1,14 @@
+---
+- name: config rng-tools
+  copy:
+    src: rngd
+    dest: /etc/sysconfig/rngd
+    owner: root
+    group: root
+    mode: 0644
+
+- name: start rngd and make it start on boot
+  service:
+    name: "rngd"
+    state: restarted
+    enabled: yes

@@ -1,0 +1,39 @@
+---
+- command: "{{ JAVA_HOME }}/bin/java -version"
+  register: java_result
+  ignore_errors: True
+
+- name: yum install essential packages, if not, copy module will not work
+  yum: name={{ item }} state=absent
+  with_items:
+    - epel-release
+    - libselinux-python
+  when: java_result is failed and ansible_os_family == "CentOS"
+
+- name: yum install essential packages, if not, copy module will not work
+  become: yes
+  yum: name={{ item }} state=absent
+  with_items:
+    - libselinux-python
+  when: java_result is failed and ansible_os_family == "RedHat"
+
+- name: make sure /usr/java exist
+  file:
+    path: /usr/java
+    state: directory
+    mode: 0755
+  when: java_result is failed
+
+- name: unarchive jdk-7u79-linux-x64.zip
+  unarchive:
+    src: jdk-7u79-linux-x64.zip
+    dest: /usr/java
+  when: java_result is failed
+
+- name: copy profile env file to /etc/profile.d
+  copy:
+    src: jdk.sh
+    dest: /etc/profile.d/jdk.sh
+
+- name: activite jdk.sh
+  shell: "source /etc/profile"

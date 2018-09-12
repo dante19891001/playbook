@@ -1,0 +1,9 @@
+---
+- hosts: "{{ host }}"
+  gather_facts: yes
+  become: yes
+
+  roles:
+    - jdk8u144_install
+    - tomcat_point_midd_install
+    - tomcat_daemon_setup_8

@@ -1,0 +1,112 @@
+tomcat_pid(){
+		for var in ${tomcat_path[@]};
+		do
+        echo `ps -fe | grep $var | grep -v grep | grep -v cronolog |awk   '{print $2}'`
+		done
+		
+}
+pids=$(tomcat_pid)
+status(){
+         
+		  for pid in ${pids[@]};
+		  do
+          if [ -n "$pid" ]; then echo -e "\e[00;32mTomcat is running with pid: $pid\e[00m"
+          else echo -e "\e[00;31mTomcat is not running\e[00m"
+          fi
+		  done
+}
+
+
+statues(){
+
+                  for pid in ${pids[@]};
+                  do
+          if [ -n "$pid" ]; then echo  "Tomcat pid: $pid"
+          else echo -e "\e[00;31mTomcat is not running\e[00m"
+          fi
+                  done
+}
+
+
+
+
+
+start() {
+lens=${#tomcat_path[@]}
+for var in ${tomcat_path[@]};
+do
+pidx=$(ps -ef | grep $var | grep -v grep |awk   '{print $2}')
+done
+lengths=${#pidx[n]}
+if [ $lengths != 0 ]
+then
+      for pid in ${pids[@]};
+       do
+         echo -e "\e[00;32mTomcat is already running (pid: $pid)\e[00m"
+       done
+
+else
+	    for vars in ${tomcat_path[@]};
+        do
+           echo -e "\e[00;32mStarting tomcat\e[00m"
+           sh $vars/bin/startup.sh
+        done
+
+
+fi
+}
+
+
+stop() {
+length=${#pids[n]}
+if [ $length != 0 ]
+then
+    echo -e "\e[00;31mStoping Tomcat\e[00m"
+    for vars in ${tomcat_path[@]};
+    do
+    echo -e "\e[00;31mStoppingg tomcat\e[00m"
+    sh $vars/bin/shutdown.sh
+    done
+    echo '------------------'
+    for pid in ${pids[@]};
+    do
+    kill -9  $pid
+    echo -e "\e[00;31mStoping Tomcat $pid is OK\e[00m"  
+    done
+else
+    echo 'Tomcat Not Running!'
+fi
+return 0
+}
+
+case $1 in
+ 
+        start)
+          start
+        ;;
+       
+        stop)  
+          stop
+        ;;
+       
+        restart)
+          stop
+          start
+        ;;
+        statues)
+                statues
+
+        ;;
+
+       
+        status)
+                status
+               
+        ;;
+       
+        *)
+                echo -e $TOMCAT_USAGE
+        ;;
+esac    
+exit 0
+

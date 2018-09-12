@@ -1,0 +1,67 @@
+---
+- name: Create common directorys
+  file: path={{item}} state=directory owner=root group=root mode=755
+  with_items:
+    - ['/home/deploy/goAgentServer']
+           
+#- name: check if /home/vagrant/ existed
+#  stat: path=/usr/local/src/go1.10.2.linux-amd64.tar.gz
+#  register: file_existed
+           
+#- name: copy go1.10.2.linux-amd64.tar.gz to /usr/local/src
+#  shell:  wget https://mirrors.nju.edu.cn/golang/go1.10.2.linux-amd64.tar.gz -P /usr/local/src/
+#  async: 3
+#  poll: 0
+#  when: file_existed.stat.exists == false
+  
+#- name: check if /home/vagrant/ existed
+#  stat: path=/usr/local/src/go1.10.2.linux-amd64.tar.gz
+#  register: file_existed.stat.exists == true
+    
+#- name: tar -xvf go1.10.2.linux-amd64.tar.gz
+#  shell: tar -xvf /usr/local/src/{{ item }} -C /home/deploy/golang/
+#  with_items:
+#    - ['go1.10.2.linux-amd64.tar.gz']
+#  when: file_existed.stat.exists == true
+    
+#- name: copy profile env file to /etc/profile.d/
+#  copy:
+#    src: go.sh
+#    dest: /etc/profile.d/go.sh
+
+- name: kill golangAgent
+  shell: "ps -ef|grep golangAgent|grep -v grep|cut -c 9-15|xargs kill -9"
+  ignore_errors: yes
+
+- name: copy golangAgent to /home/deploy/golang/src/goAgentServer
+  copy:
+    src: goAgentServer
+    dest: /home/deploy/goAgentServer/golangAgent
+    mode: 0755
+    owner: root
+    group: root
+
+- name: copy golangAgent to /home/deploy/
+  copy:
+    src: monitorProGoAgent.sh
+    dest: /home/deploy/
+    mode: 755
+    owner: root
+    group: root
+
+- name: copy golangAgent to /home/deploy/
+  shell: chmod 755 /home/deploy/monitorProGoAgent.sh
+    
+- name: create monitorProGoAgent task
+  cron:
+    name: "monitorProGoAgent"
+    minute: "*/10"
+    job: "/bin/sh /home/deploy/monitorProGoAgent.sh > /dev/null 2>&1"
+    
+#  when: file_existed.stat.exists == true
+    
+#- name: go get go-sql-driver redigo
+#  shell: go get {{item}}
+#  with_items:
+#    - ['github.com/go-sql-driver/mysql','-u github.com/garyburd/redigo/redis']
+#  when: file_existed.stat.exists == true

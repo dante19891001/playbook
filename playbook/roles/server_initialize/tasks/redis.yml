@@ -1,0 +1,9 @@
+---
+- name: check redis exist or not
+  stat:
+    path: "{{ redis.cmd_ser }}"
+  register: redis_installed
+
+- name: start install redis
+  include: install_redis.yml
+  when: not redis_installed.stat.exists

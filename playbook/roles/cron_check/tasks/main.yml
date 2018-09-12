@@ -1,0 +1,11 @@
+---
+- name: collect host's crontab info
+  command: find /home -name "struts2-core*" -type f
+  register: output
+
+- debug: var=output.stdout_lines
+
+#- name: fetch result to local
+##  fetch:
+##    src: /tmp/check_host.txt
+##    dest: /tmp/check_host_result

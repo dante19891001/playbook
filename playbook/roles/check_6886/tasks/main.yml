@@ -1,0 +1,3 @@
+---
+- name: check pt_server port
+  script: check.sh

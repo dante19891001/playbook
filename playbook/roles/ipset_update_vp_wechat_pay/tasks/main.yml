@@ -1,0 +1,39 @@
+---
+- name: ipset installed or not
+  command: /usr/sbin/service ipset status
+  register: ipset_result
+  ignore_errors: yes
+
+- name: ipset installed or not
+  yum: name={{ item }} state=present
+  with_items:
+    - ipset
+    - ipset-service
+  when: ipset_result is failed
+  ignore_errors: yes
+
+- name: ipset vp_wechat_pay rules check
+  command: /usr/sbin/ipset list vp_wechat_pay
+  register: ipset_vp_wechat_pay
+  ignore_errors: yes
+
+- name: create vp_wechat_pay group if not exist
+  command: /usr/sbin/ipset create vp_wechat_pay hash:net
+  when: ipset_vp_wechat_pay is failed
+
+- name: ipset add ip to vp_wechat_pay
+  command: /usr/sbin/ipset add vp_wechat_pay "{{ item }}"
+  with_items: "{{ vp_wechat_pay_add }}"
+  ignore_errors: yes
+
+- name: ipset del ip from vp_wechat_pay
+  command: /usr/sbin/ipset del vp_wechat_pay "{{ item }}"
+  with_items: "{{ vp_wechat_pay_del }}"
+  ignore_errors: yes
+
+- name: ipset save
+  command: /usr/sbin/service ipset save
+
+- service:
+    name: ipset
+    state: restarted

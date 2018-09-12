@@ -1,0 +1,22 @@
+---
+- name: check nginx command exist or not
+  stat: 
+    path: "{{ nginx_base_dir }}/sbin/nginx"
+  register: nginx_cmd
+
+#- name: check nginx init script exist or not
+#  stat:
+#    path: /etc/init.d/nginx
+#  register: nginx_init
+
+- name: check nginx rpm package exist or not
+  command: rpm -q nginx
+  ignore_errors: yes
+  register: nginx_rpm
+  no_log: True
+
+- name: install nginx
+  include: "install_nginx.yml"
+  when:
+    - nginx_cmd.stat.exists == false
+    - nginx_rpm|failed

@@ -1,0 +1,38 @@
+---
+
+- name: statement v_date
+  command: date +%y%m%d%H%M%S
+  register: v_date
+  
+- name: mv vhost vhost_bak
+  command:  \mv -b  {{ nginx_base }}/conf/vhost /home/bak/vhost_{{ v_date.stdout }}
+  
+- name: mv crt crt_bak
+  command:  \mv -b  {{ nginx_base }}/conf/crt /home/bak/crt_{{ v_date.stdout }}
+
+- name: mv common_files common_files_bak
+  command:  \mv -b  {{ nginx_base }}/conf/common_files /home/bak/common_files_{{ v_date.stdout }}
+  ignore_errors: yes
+  
+- name: git pull
+  command: sh /home/deploy/sync_web_vhost_crt.sh update
+
+- name: rsync general upstream
+  command: \cp {{ nginx_base }}/conf/common_files/general_upstream {{ nginx_base }}/conf/vhost/upstream
+  
+- name: rsync eq upstream
+  command: \cp {{ nginx_base }}/conf/common_files/{{ idc }}_upstream {{ nginx_base }}/conf/vhost/upstream
+  ignore_errors: yes
+  
+- name: chown -R www:www crt vhost
+  shell: chown -R www:www {{ nginx_base }}/conf/crt | chown -R www:www {{ nginx_base }}/conf/vhost | chown -R www:www {{ nginx_base }}/conf/common_files
+
+- name: nginx config check
+  command: "{{ nginx_base }}/sbin/nginx -t -c {{ nginx_base }}/conf/nginx.conf"
+  register: result
+
+- name: nginx reload
+  service:
+    name: nginx
+    state: reloaded
+  when: result is succeeded

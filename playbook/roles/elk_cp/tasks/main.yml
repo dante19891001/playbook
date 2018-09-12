@@ -1,0 +1,7 @@
+---
+- name: copy RPM script file part to "{{ host }}"
+  copy: src=filebeat-1.2.3-x86_64.rpm dest=/home/gsmcupdate/ mode=777
+- name: Install RPM
+  yum: name=/home/gsmcupdate/filebeat-1.2.3-x86_64.rpm state=present
+
+

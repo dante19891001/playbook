@@ -1,0 +1,14 @@
+upstream mzcwebssl {
+    server 127.0.0.1:2227;
+}
+
+upstream mzc_web_api {
+    server 172.23.2.60:15008;
+}
+
+
+upstream mzcappweb {
+    server 127.0.0.1:10020;
+    server 127.0.0.1:10021;
+    server 127.0.0.1:10022;
+}

@@ -1,0 +1,11 @@
+---
+- name: install apr
+  yum:
+    name: "{{ inner_item }}"
+    state: latest
+  with_items:
+    - "apr"
+    - "apr-util"
+    - "tomcat-native"
+  loop_control:
+    loop_var: inner_item

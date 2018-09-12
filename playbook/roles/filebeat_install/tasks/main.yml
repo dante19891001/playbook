@@ -1,0 +1,10 @@
+---
+- name: copy filebeat installation package
+  copy:
+    src: filebeat-6.2.4-x86_64.rpm
+    dest: /usr/local/src/
+   
+- name: install filebeat
+  yum:
+    name: /usr/local/src/filebeat-6.2.4-x86_64.rpm
+    state: present

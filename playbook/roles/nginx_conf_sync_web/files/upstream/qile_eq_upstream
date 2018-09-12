@@ -1,0 +1,15 @@
+upstream qilewebssl {
+    server 127.0.0.1:1778;
+}
+
+upstream qleappweb {
+    server 127.0.0.1:10030;
+    server 127.0.0.1:10031;
+    server 127.0.0.1:10032;
+
+}
+
+upstream qile_web_api {
+    server 172.23.2.60:15004;
+}
+

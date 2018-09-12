@@ -1,0 +1,38 @@
+---
+#- debug: msg={{ jdk_item }}
+- name: copy "{{ jdk_item.jdk_item.package }}" to host
+  copy:
+    src: "{{ jdk_item.jdk_item.package }}"
+    dest: "{{ install_base_dir }}"
+    mode: 0755
+
+- name: create "{{ jdk_base_dir }}"
+  file:
+    path: "{{ jdk_base_dir }}"
+    state: directory
+    mode: 0755
+
+- name: unarchive jdk package (version >= jdk6)
+  unarchive:
+    src: "{{ install_base_dir }}/{{ jdk_item.jdk_item.package }}"
+    dest: "{{ jdk_base_dir }}"
+    remote_src: True
+    copy: no
+  when: not jdk_item.jdk_item.package == "{{ jdk6.package }}"
+
+- debug: msg={{ jdk_item.jdk_item.package }}
+
+- name: unarchive jdk package (version = jdk6)
+  command: "./{{ jdk_item.jdk_item.package }}"
+  args:
+    chdir: "{{ install_base_dir }}"
+  when: jdk_item.jdk_item.package == "{{ jdk6.package }}"
+  register: jdk
+
+- name: move jdk6 to java dir
+  command: mv "{{ jdk6.path }}" "{{ jdk_base_dir }}"
+  args:
+    chdir: "{{ install_base_dir }}"
+  when:
+    - jdk_item.jdk_item.package == "{{ jdk6.package }}"
+    - jdk|success

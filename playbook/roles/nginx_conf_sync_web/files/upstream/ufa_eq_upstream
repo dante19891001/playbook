@@ -1,0 +1,19 @@
+upstream ufawebssl {
+    server 127.0.0.1:1667;
+}
+
+upstream ufaappweb {
+    server 127.0.0.1:10040;
+    server 127.0.0.1:10041;
+    server 127.0.0.1:10042;
+}
+upstream ufaservice{
+   server 220.228.11.59:5190;
+   server 220.228.11.66:5490;
+
+
+}
+
+upstream ufa_web_api {
+    server 172.23.2.60:15009;
+}

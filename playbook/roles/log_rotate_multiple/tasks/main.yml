@@ -1,0 +1,14 @@
+---
+- name: copy log_rotate.sh
+  template:
+    src: log_rotate.sh.j2
+    dest: /home/gsmcupdate/log_rotate.sh
+    owner: gsmcupdate
+    group: gsmcupdate
+
+- name: create log rotate task
+  cron:
+    name: "log rotate"
+    minute: "0"
+    hour: "0"
+    job: "/bin/sh /home/gsmcupdate/log_rotate.sh > /dev/null 2>&1"

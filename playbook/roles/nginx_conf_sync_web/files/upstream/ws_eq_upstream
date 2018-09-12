@@ -1,0 +1,6 @@
+upstream wswebssl {
+    server 127.0.0.1:5556;
+}
+upstream ws_web_api {
+    server 172.23.2.60:15011;
+}

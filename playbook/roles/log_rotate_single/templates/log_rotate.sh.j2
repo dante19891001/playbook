@@ -1,0 +1,20 @@
+#!/bin/bash
+log_file=(
+    /home/data/wwwlogs/{{ brand }}_{{ service_type }}.log
+    {{ project_base }}/logs/catalina.out
+)
+date_str=`date +%Y%m%d-%H%M`
+days_bakfile_will_keep=30
+
+for i in ${log_file[@]};
+do
+  cp ${i} ${i}-${date_str}
+  cp /dev/null ${i}
+
+  tar -zcvPf ${i}-${date_str}.tar.gz  ${i}-${date_str} --remove-files
+done
+
+for i in ${log_file[@]};
+do
+  find `dirname ${i}` -name "`basename ${i}`-*" -mtime ++${days_bakfile_will_keep} | xargs -i rm -rf {}
+done

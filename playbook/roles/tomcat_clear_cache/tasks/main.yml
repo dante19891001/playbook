@@ -1,0 +1,12 @@
+---
+
+- name: create /home/bak/work folder
+  file:
+    path: /home/bak/work
+    state: directory
+    mode: 0755
+    
+
+- name: clear the content of ${CATALINA.HOME}/work
+  command: "/bin/mv {{ item }}/work/* /home/bak/work/work-`/usr/bin/date +%Y%m%d-%H%M%S`"
+  with_items: "{{ CATALINA_HOME }}"

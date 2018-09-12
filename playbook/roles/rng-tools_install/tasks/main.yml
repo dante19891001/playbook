@@ -1,0 +1,18 @@
+--- 
+- name: copy centos7's rng-tools installation files
+  copy:
+    src: rng-tools-5-13.el7.x86_64.rpm
+    dest: /usr/local/src
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+- name: install centos7's rng-tools rpm
+  yum:
+    name: "/usr/local/src/rng-tools-5-13.el7.x86_64.rpm"
+    state: present
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+- name: make rngd start on boot
+  service:
+    name: rngd
+    state: started
+    enabled: yes

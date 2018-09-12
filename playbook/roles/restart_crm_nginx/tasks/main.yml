@@ -1,0 +1,3 @@
+---
+- name: restart_nginx
+  command: sh /home/docker-data/restart_crm_nginx.sh

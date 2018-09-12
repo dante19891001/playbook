@@ -1,0 +1,25 @@
+---
+- name: check python module psutil
+  command: python -c "import psutil"
+  register: psutil
+  ignore_errors: True
+
+- name: start install psutil
+  include: psutil_install.yml
+  when: psutil.stderr != ""
+
+- name: copy python monitor scripts to host
+  copy: src=check_host.py dest=/home/gsmcupdate/check_host.py
+
+- debug: msg={{ ser_port }}
+
+- name: collect host's state
+  command: /usr/bin/python /home/gsmcupdate/check_host.py {{ ser_port }}
+  register: output
+
+- debug: var=output.stdout_lines
+
+- name: fetch result to local
+  fetch:
+    src: /tmp/check_host.txt
+    dest: /usr/local/src/

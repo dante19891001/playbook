@@ -1,0 +1,10 @@
+#############
+# redis
+#############
+redis:
+    version: 4.0.10
+    cmd_ser: /usr/local/bin/redis-server
+redis_port: 6379
+redis_log_dir: /var/log/redis
+redis_data_dir: /opt/redis
+redis_pass: redismiddleservice2017!@#

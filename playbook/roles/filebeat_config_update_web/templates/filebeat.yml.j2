@@ -1,0 +1,31 @@
+filebeat.prospectors:
+- type: log
+  enabled: true
+  paths:
+    - /home/data/wwwlogs/{{ brand }}_web.log
+  fields:
+    service: {{ brand }}_web_nginx
+    log_topic: filebeat-web-nginx
+  multiline.pattern: '^[[:space:]]+(at|\.{3})\b|^Caused by:'
+  multiline.negate: false
+  multiline.match: after
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+setup.template.settings:
+  index.number_of_shards: 3
+
+name: {{ ansible_host }}
+tags: ["web-nginx", "{{ brand }}"]
+output.kafka:
+  hosts: ["69.172.86.138:9092", "69.172.86.138:9093", "47.91.153.74:9092"]
+
+  topic: '%{[fields.log_topic]}'
+  partition.round_robin:
+    reachable_only: false
+
+  required_acks: 1
+  compression: gzip
+  max_message_bytes: 1000000

@@ -1,0 +1,114 @@
+---
+#############
+# ansible-global
+#############
+install_base_dir: /usr/local/src
+ansible_user: gsmcupdate
+
+
+#############
+# service
+#############
+# used to config server_type's information
+#   1. map server_type with folder extension to key:value dict
+#   for example:
+#     if one host "test" and its server_type is "webserver"
+#     its code folder name is "test_web"
+#   2. rsync_service identify which service need to install rsync
+# !!!!DONT EDIT THIS ONLY IF YOU KNOW WHAT YOU ARE DOING!!!!
+service_conf:
+  nginx:
+    yaml_file: nginx.yml
+  office:
+    ext: office
+    yaml_file: tomcat.yml
+  webserver:
+    ext: web
+    yaml_file: tomcat.yml
+  webservice:
+    ext: service
+    yaml_file: tomcat.yml
+  middleservice:
+    ext: midd
+    yaml_file: tomcat.yml
+  redis:
+    yaml_file: redis.yml
+  zookeeper:
+    yaml_file: zookeeper.yml
+
+rsync_service:
+  - "office"
+  - "webserver"
+  - "webservice"
+  - "middleservice"
+
+
+#############
+# nginx
+#############
+nginx_stable_url: http://nginx.org/download/nginx-1.12.0.tar.gz
+nginx_user: www
+nginx_group: www
+nginx_base_dir: /usr/local/nginx
+nginx_log_dir: /home/data/wwwlogs
+configure_args: >
+  --user={{ nginx_user }}
+  --group={{ nginx_group }}
+  --prefix={{ nginx_base_dir }}
+  --with-http_stub_status_module
+  --with-http_ssl_module
+  --with-pcre
+  --with-http_realip_module
+
+
+#############
+# jdk
+#############
+jdk6:
+    path: jdk1.6.0_45
+    package: jdk-6u45-linux-x64.bin
+jdk7:
+    path: jdk1.7.0_79
+    package: jdk-7u79-linux-x64.tar.gz
+jdk8:
+    path: jdk1.8.0_121
+    package: jdk-8u121-linux-x64.tar.gz
+jdk_base_dir: /usr/java
+
+
+#############
+# tomcat
+#############
+tomcat7:
+    path: apache-tomcat-7.0.77
+    package: apache-tomcat-7.0.77.tar.gz
+
+
+#############
+# rsync
+#############
+rsync:
+    user: leo
+    password: leo!@#leo
+
+
+#############
+# redis
+#############
+redis:
+    version: 3.2.6
+    cmd_ser: /usr/local/bin/redis-server
+redis_port: 6379
+redis_log_dir: /var/log/redis
+redis_data_dir: /opt/redis
+redis_pass: pass123
+
+
+#############
+# zookeeper
+#############
+zookeeper_version: 3.4.10
+zookeeper_basedir: /home/server
+zookeeper_dir: "{{ zookeeper_basedir }}/zookeeper-{{ zookeeper_version }}"
+zookeeper_cmd_ser: "{{ zookeeper_dir }}/bin/zkServer.sh"
+zookeeper_url: "http://mirror.rise.ph/apache/zookeeper/zookeeper-{{ zookeeper_version }}/zookeeper-{{ zookeeper_version }}.tar.gz"

@@ -1,0 +1,4 @@
+---
+- name: restart "{{ host }}" tomcat 
+  service: name="{{ item }}" state=restarted
+  with_items: "{{ brand_pcb }}"

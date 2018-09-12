@@ -1,0 +1,14 @@
+---
+- name: copy nginx install script
+  copy:
+    src: nginx.sh.j2
+    dest: "/tmp/nginx.sh"
+    mode: 0755
+    owner: "root"
+    group: "root"
+
+- name: install nginx
+  shell: /bin/sh nginx.sh >> /tmp/nginx.log 2>&1
+  args:
+    chdir: "/tmp"
+

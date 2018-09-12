@@ -1,0 +1,10 @@
+---
+- name: web conf sync
+  template:
+    src: "{{ item }}"
+    dest: "{{ project_base }}/WEB-INF/classes/"
+  with_items:
+    - config.properties
+    - init.properties
+    - log4j.properties
+    - oscache.properties

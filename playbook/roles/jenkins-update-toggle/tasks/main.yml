@@ -1,0 +1,3 @@
+---
+- name: the toggle of jenkins update
+  command: "/usr/bin/chattr -R {{ chattr_arg }} {{ project_base }}"

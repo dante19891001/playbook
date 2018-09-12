@@ -1,0 +1,24 @@
+---
+- name: create dir home/back
+  file:
+    path: "/home/{{ item }}"
+    state: directory
+  with_items:
+    - back
+
+- name: copy 365payhub  to /home/back
+  copy: 
+    src: 365payhub.cer
+    dest: /home/back/365payhub.cer
+
+- name: Import keystore
+  command: >
+    /usr/java/jdk1.7.0_79/bin/keytool
+    -keystore /usr/java/jdk1.7.0_79/jre/lib/security/cacerts
+    -storepass changeit
+    -alias 365payhub
+    -importcert
+    -noprompt
+    -trustcacerts
+    -file /home/back/365payhub.cer
+  

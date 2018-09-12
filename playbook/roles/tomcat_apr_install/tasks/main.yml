@@ -1,0 +1,81 @@
+---
+#- name: check centos6's apr install or not
+#  yum:
+#    name: "{{ packages }}"
+#  vars:
+#    packages:
+#    - apr-1.3.9-5.el6_9.1.x86_64.rpm
+#    - apr-util-1.3.9-3.el6_0.1.x86_64.rpm
+#    - tomcat-native-1.1.34-1.el6.x86_64.rpm
+#  register: result
+#  ignore_errors: true
+#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+#
+#- name: check centos7's apr install or not
+#  yum:
+#    name: "{{ packages }}"
+#  vars:
+#    packages:
+#    - apr-1.4.8-3.el7_4.1.x86_64.rpm
+#    - apr-util-1.5.2-6.el7.x86_64.rpm
+#    - tomcat-native-1.2.17-1.el7.x86_64.rpm
+#  register: result
+#  ignore_errors: true
+#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+
+#- name: delete all the other files
+#  file:
+#    path: /usr/local/src/apr-install
+#    state: absent
+#  when: result.msg is search("No")
+
+- name: create apr installation base folder
+  file:
+    path: /usr/local/src/apr-install
+    state: directory
+    mode: 0755
+
+- name: copy centos6's apr installation files
+  copy:
+    src: "{{ item }}"
+    dest: /usr/local/src/apr-install
+  with_items:
+    - apr-1.3.9-5.el6_9.1.x86_64.rpm
+    - apr-util-1.3.9-3.el6_0.1.x86_64.rpm
+    - tomcat-native-1.1.34-1.el6.x86_64.rpm
+#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6" and result.msg is search("No")
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+
+- name: copy centos7's apr installation files
+  copy:
+    src: "{{ item }}"
+    dest: /usr/local/src/apr-install
+  with_items:
+    - apr-1.4.8-3.el7_4.1.x86_64.rpm
+    - apr-util-1.5.2-6.el7.x86_64.rpm
+    - tomcat-native-1.2.17-1.el7.x86_64.rpm
+#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7" and result.msg is search("No")
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+- name: install centos6's apr rpm
+  yum:
+    name: "/usr/local/src/apr-install/{{ item }}"
+    state: present
+  with_items:
+    - apr-1.3.9-5.el6_9.1.x86_64.rpm
+    - apr-util-1.3.9-3.el6_0.1.x86_64.rpm
+    - tomcat-native-1.1.34-1.el6.x86_64.rpm
+#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6" and result.msg is search("No")
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+
+- name: install centos7's apr rpm
+  yum:
+    name: "/usr/local/src/apr-install/{{ item }}"
+    state: present
+  with_items:
+    - apr-1.4.8-3.el7_4.1.x86_64.rpm
+    - apr-util-1.5.2-6.el7.x86_64.rpm
+    - tomcat-native-1.2.17-1.el7.x86_64.rpm
+#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7" and result.msg is search("No")
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"

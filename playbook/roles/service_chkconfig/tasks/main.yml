@@ -1,0 +1,15 @@
+---
+- name: copy tomcat management script template part to "{{ host }}"
+  template: src=tomcat-initd-template.sh dest=/etc/init.d/{{ initd_file }} mode=755
+
+- name: copy tomcat management script file part to "{{ host }}"
+  copy: src=tomcat dest=/etc/init.d/tomcat mode=755
+
+#- name: copy rsyncd management script file part to "{{ host }}"
+#  copy: src=rsyncd dest=/etc/init.d/rsyncd mode=755
+
+- name: make tomcat start on boot
+  service: name={{ initd_file }} enabled=yes
+
+#- name: make rsyncd start on boot
+#  service: name=rsyncd enabled=yes

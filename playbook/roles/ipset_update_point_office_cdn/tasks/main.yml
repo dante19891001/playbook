@@ -1,0 +1,39 @@
+---
+- name: ipset installed or not
+  command: /usr/sbin/service ipset status
+  register: ipset_result
+  ignore_errors: yes
+
+- name: ipset installed or not
+  yum: name={{ item }} state=present
+  with_items:
+    - ipset
+    - ipset-service
+  when: ipset_result is failed
+  ignore_errors: yes
+
+- name: ipset point_office_cdn rules check
+  command: /usr/sbin/ipset list point_office_cdn
+  register: ipset_point_office_cdn
+  ignore_errors: yes
+
+- name: create point_office_cdn group if not exist
+  command: /usr/sbin/ipset create point_office_cdn hash:net
+  when: ipset_point_office_cdn is failed
+
+- name: ipset add ip to point_office_cdn
+  command: /usr/sbin/ipset add point_office_cdn "{{ item }}"
+  with_items: "{{ point_office_cdn_add }}"
+  ignore_errors: yes
+
+- name: ipset del ip from point_office_cdn
+  command: /usr/sbin/ipset del point_office_cdn "{{ item }}"
+  with_items: "{{ point_office_cdn_del }}"
+  ignore_errors: yes
+
+- name: ipset save
+  command: /usr/sbin/service ipset save
+
+- service:
+    name: ipset
+    state: restarted

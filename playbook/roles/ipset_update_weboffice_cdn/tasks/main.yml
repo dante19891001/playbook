@@ -1,0 +1,39 @@
+---
+- name: ipset installed or not
+  command: /usr/sbin/service ipset status
+  register: ipset_result
+  ignore_errors: yes
+
+- name: ipset installed or not
+  yum: name={{ item }} state=present
+  with_items:
+    - ipset
+    - ipset-service
+  when: ipset_result is failed
+  ignore_errors: yes
+
+- name: ipset weboffice_cdn rules check
+  command: /usr/sbin/ipset list weboffice_cdn
+  register: ipset_weboffice_cdn
+  ignore_errors: yes
+
+- name: create weboffice_cdn group if not exist
+  command: /usr/sbin/ipset create weboffice_cdn hash:net
+  when: ipset_weboffice_cdn is failed
+
+- name: ipset add ip to weboffice_cdn
+  command: /usr/sbin/ipset add weboffice_cdn "{{ item }}"
+  with_items: "{{ weboffice_cdn_add }}"
+  ignore_errors: yes
+
+- name: ipset del ip from weboffice_cdn
+  command: /usr/sbin/ipset del weboffice_cdn "{{ item }}"
+  with_items: "{{ weboffice_cdn_del }}"
+  ignore_errors: yes
+
+- name: ipset save
+  command: /usr/sbin/service ipset save
+
+- service:
+    name: ipset
+    state: restarted

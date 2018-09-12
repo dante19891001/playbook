@@ -1,0 +1,23 @@
+---
+- name: get jdk version
+  command: ls /usr/java
+  register: jdk_version
+
+- name: jdk version
+  debug: msg={{ jdk_version.stdout }}
+
+- name: get tomcat version
+  shell: "{{ item }}/bin/version.sh"
+  with_items:
+     - "{{ CATALINA_HOME_01 }}"
+     - "{{ CATALINA_HOME_02 }}"
+     - "{{ CATALINA_HOME_03 }}"
+     - "{{ CATALINA_HOME_04 }}"
+     - "{{ CATALINA_HOME_05 }}"
+  register: tomcat_version
+  ignore_errors: yes
+
+- name: tomcat version
+  debug:
+    msg: "{{ item.stdout }}"
+  with_items: "{{ tomcat_version.results }}"

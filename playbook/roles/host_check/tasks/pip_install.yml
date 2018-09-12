@@ -1,0 +1,14 @@
+---
+- name: install python-devel
+  yum: name=python-devel state=present
+
+- name: download pip
+  get_url:
+    url: https://bootstrap.pypa.io/2.6/get-pip.py
+    dest: /usr/local/src
+    mode: 755
+
+- name: install pip
+  command: /usr/bin/python get-pip.py
+  args:
+    chdir: /usr/local/src

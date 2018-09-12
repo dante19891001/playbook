@@ -1,0 +1,10 @@
+#############
+# redis
+#############
+redis:
+    version: 3.2.12
+    cmd_ser: /usr/local/bin/redis-server
+redis_port: 6389
+redis_log_dir: /var/log/redis
+redis_data_dir: /opt/redis
+redis_pass: gsmcredis

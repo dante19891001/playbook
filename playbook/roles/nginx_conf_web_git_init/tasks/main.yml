@@ -1,0 +1,25 @@
+---
+- name: install git 
+  yum: 
+    name: git
+    state: present
+
+- name: copy shell script
+  copy:
+    src: "{{ item }}"
+    dest: /home/deploy
+  with_items:
+    - web_nginx_init.sh
+     
+- name: git intit
+  command: sh /home/deploy/web_nginx_init.sh {{ brand }}
+   
+- name: delete web_nginx_init.sh
+  command: mv -f /home/deploy/web_nginx_init.sh /home/deploy/sync_web_vhost_crt.sh
+   
+- name: copy sync_web_vhost_crt.sh
+  copy:
+    src: "{{ item }}"
+    dest: /home/deploy
+  with_items:
+    - sync_web_vhost_crt.sh

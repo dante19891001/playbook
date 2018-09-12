@@ -1,0 +1,15 @@
+---
+- hosts: "{{ host }}"
+  gather_facts: yes
+  become: yes
+
+  roles:
+    - jdk8u144_install
+    - rng-tools_install
+    - tomcat_apr_install
+    - tomcat_point_midd_install
+    - tomcat_daemon_setup_8
+    - rsync_conf_sync
+    - initialization_folder
+    - log_rotate_single
+    - font_install

@@ -1,0 +1,54 @@
+---
+- name: statement v_date
+  command: date +%y%m%d%H%M%S
+  register: v_date
+
+- name: Backup ipset
+  command: cp /etc/sysconfig/ipset /tmp/ipset_{{ v_date.stdout }}
+  ignore_errors: yes
+  
+- name: ipset installed or not
+  command: /usr/sbin/service ipset status
+  register: ipset_check
+  ignore_errors: yes
+
+- name: ipset install
+  yum: name={{ item }} state=present
+  with_items:
+    - ipset
+    - ipset-service
+  when: ipset_check is failed
+  ignore_errors: yes
+
+- name: ipset group rules check
+  command: /usr/sbin/ipset list "{{ item.key }}"
+  with_dict: "{{ ipset_service }}"
+  register: ipset_g
+  ignore_errors: yes
+
+- name: ipset create group
+  command: /usr/sbin/ipset create "{{ item.item.key }}" hash:net
+  when: item is failed
+  with_items: "{{ ipset_g.results }}"
+
+- name: ipset add ip to group "{{ brand }}_web"
+  command: /usr/sbin/ipset add "{{brand}}_web" "{{ item }}"
+  with_items: "{{ ipset_service['{{ brand }}_web'] }}"
+  ignore_errors: yes
+
+- name: ipset add ip to group "{{ brand }}_app"
+  command: ipset add "{{brand}}_app" "{{ item }}"
+  with_items: "{{ ipset_service['{{ brand }}_app'] }}"
+  ignore_errors: yes
+
+- name: ipset add ip to group desktop_cloud
+  command: /usr/sbin/ipset add desktop_cloud "{{ item }}"
+  with_items: "{{ ipset_service.desktop_cloud }}"
+  ignore_errors: yes
+
+- name: ipset save
+  command: /usr/sbin/service ipset save
+
+- service:
+    name: ipset
+    state: restarted

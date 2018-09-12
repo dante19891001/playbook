@@ -1,0 +1,32 @@
+---
+#- name: copy tomcat management script template part to "{{ host }}"
+#  template: src=tomcat-initd-template.sh dest=/etc/init.d/{{ initd_file }} mode=755
+#  register: conf_changed
+#
+#- name: copy tomcat management script file part to "{{ host }}"
+#  copy: src=tomcat dest=/etc/init.d/tomcat mode=755
+#
+#- name: centos7 daemon-reload
+##  become: yes
+#  command: "/usr/bin/systemctl daemon-reload"
+#  when: ansible_distribution_version | version_compare('7', '>') and conf_changed|succeeded
+
+- name: get "{{ host }}" old pid
+  shell: /etc/init.d/{{ initd_file }} statues
+  register: old
+
+- name: restart "{{ host }}" tomcat
+#  become: yes
+  service: name={{ initd_file }} state=restarted
+
+- name: get "{{ host }}" new pid
+  shell: /etc/init.d/{{ initd_file }} statues
+  register: new
+
+- debug: var=old.stdout_lines
+- debug: var=new.stdout_lines
+- debug: msg="Director...Playbook successfully executed...Congratulations!!!...."
+  when: old.stdout_lines != new.stdout_lines and new.stdout_lines != ''
+- debug: msg="What's the fuck! it wrong!!!"
+  when: old.stdout_lines == new.stdout_lines or new.stdout_lines == ''
+

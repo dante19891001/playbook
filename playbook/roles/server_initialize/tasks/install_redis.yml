@@ -1,0 +1,46 @@
+---
+- name: download and unarchive redis package
+  unarchive:
+    src: "http://download.redis.io/releases/redis-{{ redis.version }}.tar.gz"
+    dest: "{{ install_base_dir }}"
+    remote_src: True
+    copy: no
+
+- name: install redis from source
+  command: "{{ redis_item }}"
+  args:
+    chdir: "{{ install_base_dir }}/redis-{{ redis.version }}"
+  with_items:
+    - "make"
+    - "make install"
+  loop_control:
+    loop_var: "redis_item"
+
+- name: create redis log dir
+  file:
+    path: "{{ redis_item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ redis_log_dir }}"
+    - "{{ redis_data_dir }}"
+    - /etc/redis
+  loop_control:
+    loop_var: redis_item
+
+- name: copy redis init script
+  template:
+    src: redis_init_script.j2
+    dest: "/etc/init.d/redis{{ redis_port }}"
+    mode: 0755
+
+- name: copy redis config file 
+  template:
+    src: redis.conf.j2
+    dest: "/etc/redis/{{ redis_port }}.conf"
+    mode: 0644
+
+- name: chkconfig redis on
+  service:
+    name: "redis{{ redis_port }}"
+    enabled: yes

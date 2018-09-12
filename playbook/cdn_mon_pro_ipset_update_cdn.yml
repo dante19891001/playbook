@@ -1,0 +1,8 @@
+---
+- hosts: "{{ host }}"
+  gather_facts: yes
+  become: yes
+
+  roles:
+    - cdn_mon_pro
+    - ipset_update_cdn

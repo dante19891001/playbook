@@ -1,0 +1,28 @@
+---
+- name: install packages required
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - epel-release
+    - rpm-build
+    - cabextract
+    - ttmkfdir
+
+- name: copy fonts's files
+  copy:
+    src: msttcore-fonts-installer-2.6-1.noarch.rpm
+    dest: /usr/local/src/
+
+#- name: rpm-build
+#  command: "rpmbuild -bb msttcorefonts-2.5-1.spec"
+#  args:
+#    chdir: /usr/local/src
+   
+- name: install fonts rpm
+  yum:
+    name: /usr/local/src/msttcore-fonts-installer-2.6-1.noarch.rpm
+    state: present
+    
+- name:  Refresh fonts
+  command:  "fc-cache -f -v"

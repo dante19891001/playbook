@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# check nginx user & group exist or not
+function create_nginx_user() {
+  grep "{{ nginx_group }}" /etc/group >/dev/null 2>&1 && {
+    echo "group {{ nginx_group }} already exist!!" || {
+      groupadd {{ nginx_group }}
+    }
+  }
+  grep "{{ nginx_user }}" /etc/passwd >/dev/null 2>&1 && {
+    echo "user {{ nginx_user }} already exist!!" || {
+      useradd -g {{ nginx_group }} {{ nginx_user }}
+    }
+  }
+}
+
+# download and install nginx
+function install_nginx() {
+  rm -rf nginx-stable; mkdir nginx-stable
+  rm -rf nginx-stables.tar.gz
+  wget {{ nginx_stable_url }} -O nginx-stable.tar.gz >/dev/null && {
+    tar zxvf nginx-stable.tar.gz -C nginx-stable
+  }
+  [ -e `dirname {{ nginx_base_dir }}/sbin`"/sbin/nginx" ] || {
+    cd nginx-stable/*/
+    ./configure {{ configure_args }}
+    make
+    make install
+    RES=$?
+    mkdir -p {{ nginx_log_dir }}
+    mkdir -p {{ nginx_base_dir }}/conf/vhost
+  }
+  return $RES
+}
+
+# set PATH env
+function set_nginx_PATH() {
+  egrep "export +PATH.*{{ nginx_base_dir }}/sbin" /etc/profile && {
+    echo "nginx already set PATH env!!" || {
+      echo 'export PATH=$PATH'":{{ nginx_base_dir }}/sbin" >> /etc/profile
+      source /etc/profile 2>&1 > /dev/null
+    }
+  }
+}
+
+# main process
+echo ""
+echo ""
+echo ""
+echo "============================"
+echo "START-TIME: "`date +%Y%m%d-%H%M`
+echo "CREATE NGINX USER"
+create_nginx_user
+echo ""
+echo ""
+echo "INSTALL NGINX"
+install_nginx && RESULT=0 || RESULT=1
+echo ""
+echo ""
+echo "SET NGINX PATH"
+set_nginx_PATH
+echo ""
+echo "END-TIME: "`date +%Y%m%d-%H%M`
+echo "============================"
+exit $RESULT

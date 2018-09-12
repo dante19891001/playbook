@@ -1,0 +1,39 @@
+---
+- name: ipset installed or not
+  command: /usr/sbin/service ipset status
+  register: ipset_result
+  ignore_errors: yes
+
+- name: ipset installed or not
+  yum: name={{ item }} state=present
+  with_items:
+    - ipset
+    - ipset-service
+  when: ipset_result is failed
+  ignore_errors: yes
+
+- name: ipset cdn rules check
+  command: /usr/sbin/ipset list cdn
+  register: ipset_cdn
+  ignore_errors: yes
+
+- name: create cdn group if not exist
+  command: /usr/sbin/ipset create cdn hash:net
+  when: ipset_cdn is failed
+
+- name: ipset add ip to cdn
+  command: /usr/sbin/ipset add cdn "{{ item }}"
+  with_items: "{{ cdn_add }}"
+  ignore_errors: yes
+
+- name: ipset del ip from cdn
+  command: /usr/sbin/ipset del cdn "{{ item }}"
+  with_items: "{{ cdn_del }}"
+  ignore_errors: yes
+
+- name: ipset save
+  command: /usr/sbin/service ipset save
+
+- service:
+    name: ipset
+    state: restarted

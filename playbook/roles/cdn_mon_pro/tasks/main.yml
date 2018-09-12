@@ -1,0 +1,22 @@
+---
+- name: copy cdn monitor file to "{{ host }}"
+  copy:
+    src: "{{ item }}"
+    dest: /usr/local/nginx/conf/vhost
+  with_items:
+    - http_rewrite.conf
+    - cdn_ip
+    - jiedian_ip
+
+- name: copy cdn monitor file to "{{ host }}"
+  copy:
+    src: data.txt
+    dest: /usr/local/nginx/html/data.txt
+
+- name: nginx config check
+  command: /usr/local/nginx/sbin/nginx -t
+  register: check_result
+
+- name: nginx reload if check_result is ok
+  command: /usr/local/nginx/sbin/nginx -s reload
+  when: check_result|succeeded

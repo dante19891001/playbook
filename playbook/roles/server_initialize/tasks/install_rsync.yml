@@ -1,0 +1,39 @@
+# deploy rsync
+- name: yum install rsync
+  yum:
+    name: rsync
+    state: present
+
+- name: copy rsync configure file to "{{ host }}"
+  template:
+    src: rsyncd.conf.j2
+    dest: /etc/rsyncd.conf
+    mode: 0644
+
+- name: copy rsync auth file to "{{ host }}"
+  template:
+    src: rsyncd.secrets.j2
+    dest: /etc/rsyncd.secrets
+    mode: 0600
+
+- name: copy rsync init file to "{{ host }}"
+  copy:
+    src: rsyncd
+    dest: /etc/init.d/rsyncd
+    mode: 0755
+
+- name: chkconfig rsyncd and start rsyncd
+  service:
+    name: rsyncd
+    state: started
+    enabled: yes
+
+- name: create code folder
+  file:
+    path: "/home/{{ ser.key }}/{{ brand.name }}_{{ ser.value.ext }}/DFH_Office"
+    state: directory
+    mode: 0755
+  with_dict: "{{ server_type }}"
+  loop_control:
+    loop_var: ser
+  when: ser.key in rsync_service

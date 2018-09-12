@@ -1,0 +1,39 @@
+---
+- name: ipset installed or not
+  command: /usr/sbin/service ipset status
+  register: ipset_result
+  ignore_errors: yes
+
+- name: ipset installed or not
+  yum: name={{ item }} state=present
+  with_items:
+    - ipset
+    - ipset-service
+  when: ipset_result is failed
+  ignore_errors: yes
+
+- name: ipset ssh rules check
+  command: /usr/sbin/ipset list ssh
+  register: ipset_ssh
+  ignore_errors: yes
+
+- name: create ssh group if not exist
+  command: /usr/sbin/ipset create ssh hash:net
+  when: ipset_ssh is failed
+
+- name: ipset add ip to ssh
+  command: /usr/sbin/ipset add ssh "{{ item }}"
+  with_items: "{{ ssh_add }}"
+  ignore_errors: yes
+
+- name: ipset del ip from ssh
+  command: /usr/sbin/ipset del ssh "{{ item }}"
+  with_items: "{{ ssh_del }}"
+  ignore_errors: yes
+
+- name: ipset save
+  command: /usr/sbin/service ipset save
+
+- service:
+    name: ipset
+    state: restarted

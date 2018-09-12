@@ -1,0 +1,55 @@
+---
+- name: VEREY INPORTANT !!! - avoid overwriting, "{{ APP_HOME }}" MUST be not exist.
+  command: "/bin/ls {{ APP_HOME }}"
+  register: app_check_result
+  ignore_errors: True
+
+- name: create dir "{{ APP_HOME }}"
+  file:
+    path: "{{ item }}/webapps/DFH"
+    state: directory
+    mode: 0755
+    owner: tomcat
+    group: tomcat
+  with_items: "{{ CATALINA_HOME }}"
+  when: app_check_result is failed and item != ""
+
+- name: copy tomcat content
+  unarchive:
+    src: apache-tomcat-8.5.24-jdk8u144-jsvc.zip
+    dest: "{{ item }}"
+    mode: 0755
+    owner: tomcat
+    group: tomcat
+  with_items: "{{ CATALINA_HOME }}"
+  when: app_check_result is failed and item != ""
+
+- name: copy server.xml
+  template:
+    src: server.xml.j2
+    dest: "{{ item }}/conf/server.xml"
+    mode: 0644
+    owner: tomcat
+    group: tomcat
+  with_items: "{{ CATALINA_HOME }}"
+  when: app_check_result is failed and item != ""
+
+- name: copy logging.properties
+  template:
+    src: logging.properties.j2
+    dest: "{{ item }}/conf/logging.properties"
+    mode: 0644
+    owner: tomcat
+    group: tomcat
+  with_items: "{{ CATALINA_HOME }}"
+  when: app_check_result is failed and item != ""
+
+- name: copy daemon.sh (CATALINA_OUT & JAVA_OPTS)
+  template:
+    src: daemon.sh.j2
+    dest: "{{ item }}/bin/daemon.sh"
+    mode: 0755
+    owner: tomcat
+    group: tomcat
+  with_items: "{{ CATALINA_HOME }}"
+  when: app_check_result is failed and item != ""

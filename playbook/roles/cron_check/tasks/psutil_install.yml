@@ -1,0 +1,14 @@
+---
+- name: check python modules pip
+  command: python -c "import pip"
+  register: pip
+  ignore_errors: True
+
+- name: start install pip
+  include: pip_install.yml
+#  command: echo "start install pip"
+#  notify: pip install
+  when: pip.stderr != ""
+
+- name: install psutil using pip
+  command: /usr/bin/pip install psutil

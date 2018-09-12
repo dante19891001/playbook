@@ -1,0 +1,20 @@
+---
+- name: get "{{ host }}" old pid
+  shell: /etc/init.d/{{ initd_file_old }} statues
+  register: old
+
+- name: restart "{{ host }}" tomcat
+#  become: yes
+  service: name={{ initd_file_old }} state=restarted
+
+- name: get "{{ host }}" new pid
+  shell: /etc/init.d/{{ initd_file_old }} statues
+  register: new
+
+- debug: var=old.stdout_lines
+- debug: var=new.stdout_lines
+- debug: msg="Director...Playbook successfully executed...Congratulations!!!...."
+  when: old.stdout_lines != new.stdout_lines and new.stdout_lines != ''
+- debug: msg="What's the fuck! it wrong!!!"
+  when: old.stdout_lines == new.stdout_lines or new.stdout_lines == ''
+

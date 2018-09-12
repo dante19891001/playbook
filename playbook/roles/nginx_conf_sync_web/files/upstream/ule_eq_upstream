@@ -1,0 +1,14 @@
+upstream ulewebssl {
+    server 127.0.0.1:3114;
+}
+
+upstream uleappweb {
+    server 127.0.0.1:10050;
+    server 127.0.0.1:10051;
+    server 127.0.0.1:10052;
+}
+
+upstream ule_web_api {
+    server 172.23.2.60:15010;
+}
+

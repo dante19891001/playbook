@@ -1,0 +1,53 @@
+#!/bin/bash
+# chkconfig: - 99 50
+# description: rsync is a file transport daemon
+# processname: rsync
+# config: /etc/rsyncd.conf
+   
+# Source function library
+. /etc/init.d/functions
+   
+RETVAL=0
+rsync="/usr/bin/rsync"
+prog="rsync"
+
+  
+start() {
+	echo -n $"Starting $prog: "
+        daemon $rsync --daemon 
+        RETVAL=$?
+        echo
+        return $RETVAL
+}
+   
+stop() {
+        echo -n $"Stopping $prog: "
+        killproc $prog -QUIT
+	RETVAL=$?
+        echo
+        return $RETVAL
+}
+   
+# call the function we defined
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart|reload)
+        stop
+        start
+        RETVAL=$?
+        ;;
+  status)
+        status $prog
+        RETVAL=$?
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart|reload|status}"
+        exit 2
+esac
+   
+exit $RETVAL

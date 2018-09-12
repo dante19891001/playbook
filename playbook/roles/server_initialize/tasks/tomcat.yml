@@ -1,0 +1,48 @@
+---
+# install rng-tools
+- name: check rng-tools config right or not
+  command: grep 'EXTRAOPTIONS="--rng-device /dev/urandom"' /etc/sysconfig/rngd
+  register: rng_conf
+  ignore_errors: yes
+
+- name: start install rng-tools
+  include: "install_rng_tools.yml"
+  when: rng_conf|failed
+
+# install apr
+- name: check apr installed or not
+  command: rpm -q {{ rpm_item }}
+  with_items:
+    - apr
+    - apr-util
+    - tomcat-native
+  register: apr_package
+  ignore_errors: yes
+  loop_control:
+    loop_var: rpm_item
+
+- name: start install apr
+  include: "install_apr.yml"
+  when:
+    - apr_package|failed
+
+# install jdk
+- name: check jdk exist or not
+  stat:
+    path: "{{ jdk_base_dir }}/{{ jdk_item.path }}/bin/java"
+  with_items: "{{ jdk_version }}"
+  register: jdk
+  loop_control:
+    loop_var: jdk_item
+
+- name: start install jdk
+  include: "install_jdk.yml"
+  when: not jdk_item.stat.exists
+  with_items: "{{ jdk.results }}"
+  no_log: True
+  loop_control:
+    loop_var: jdk_item
+
+# deploy rsync
+- name: install rsync
+  include: "install_rsync.yml"

@@ -1,0 +1,17 @@
+---
+- name: find all file to prepare to fetch
+  find:
+    paths: /etc/sysconfig/
+    patterns: "ip*"
+    recurse: no
+  register: file_2_fetch
+
+- name: create dir if not exists
+  file: path=/tmp/{{ inventory_hostname }}/  state=directory mode=755
+
+- name: fetch iptbales and ipset files to dest
+  fetch:
+    src: "{{ item.path }}"
+    dest: /tmp/{{ inventory_hostname }}/
+    flat: yes
+  with_items: "{{ file_2_fetch.files }}"

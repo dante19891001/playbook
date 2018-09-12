@@ -1,0 +1,39 @@
+---
+- name: ipset installed or not
+  command: /usr/sbin/service ipset status
+  register: ipset_result
+  ignore_errors: yes
+
+- name: ipset installed or not
+  yum: name={{ item }} state=present
+  with_items:
+    - ipset
+    - ipset-service
+  when: ipset_result is failed
+  ignore_errors: yes
+
+- name: ipset rsync rules check
+  command: /usr/sbin/ipset list rsync
+  register: ipset_rsync
+  ignore_errors: yes
+
+- name: create rsync group if not exist
+  command: /usr/sbin/ipset create rsync hash:net
+  when: ipset_rsync is failed
+
+- name: ipset add ip to rsync
+  command: /usr/sbin/ipset add rsync "{{ item }}"
+  with_items: "{{ rsync_add }}"
+  ignore_errors: yes
+
+- name: ipset del ip from rsync
+  command: /usr/sbin/ipset del rsync "{{ item }}"
+  with_items: "{{ rsync_del }}"
+  ignore_errors: yes
+
+- name: ipset save
+  command: /usr/sbin/service ipset save
+
+- service:
+    name: ipset
+    state: restarted

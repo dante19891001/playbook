@@ -1,0 +1,8 @@
+rm -fr /usr/local/src/nginx-1.12.1*
+cd /usr/local/src/
+wget http://69.172.86.99:998/nginx-1.12.1.tar.gz
+tar -zxvf nginx-1.12.1.tar.gz
+cd /usr/local/src/nginx-1.12.1
+./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-pcre --with-http_realip_module --with-http_gzip_static_module
+make && make install
+ 

@@ -1,0 +1,27 @@
+upstream e68webssl {
+    server 127.0.0.1:12110;
+    server 127.0.0.1:12111;
+    server 127.0.0.1:12112;
+}
+
+upstream e68web {
+    server 127.0.0.1:12113;
+    server 127.0.0.1:12114;
+}
+upstream e68_web_api {
+    server 172.23.2.60:15005;
+}
+
+
+upstream e68appweb {
+    server 127.0.0.1:10060 backup;
+    server 127.0.0.1:10061 backup;
+    server 127.0.0.1:10062 backup;
+    server 127.0.0.1:10063 backup;
+    server 127.0.0.1:10064 backup;
+    server 113.10.193.60:10060;
+    server 113.10.193.60:10061;
+    server 113.10.193.60:10062;
+    server 113.10.193.60:10063;
+    server 113.10.193.60:10064;
+}

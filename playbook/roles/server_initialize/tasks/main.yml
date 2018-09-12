@@ -1,0 +1,11 @@
+---
+- name: yum install env packages
+  yum: name={{ item }} state=present
+  with_items:
+    - epel-release
+    - libselinux-python
+    - "@Development tools"
+    - "@base"
+
+- include: "{{ item.value.yaml_file }}"
+  with_dict: "{{ server_type }}"
